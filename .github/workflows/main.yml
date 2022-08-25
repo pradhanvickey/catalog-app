@@ -76,13 +76,14 @@ jobs:
           AWS_EC2_PUBLIC_IP: ${{ secrets.AWS_EC2_PUBLIC_IP  }}
           AWS_EC2_USERNAME: ${{ secrets.AWS_EC2_USERNAME  }}
         run: |
-          pwd
+          echo pwd
           echo "$AWS_EC2_PEM" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${AWS_EC2_USERNAME}@${AWS_EC2_PUBLIC_IP} '
-            cd {/home/ubuntu/catalog-app} &&
-            git checkout main &&
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            #Now we have got the access of EC2 and we will start the deploy .
+            cd /home/ubuntu/catalog-app &&
+            git checkout master &&
             git fetch --all &&
-            git reset --hard origin/main &&
-            git pull origin main &&
-            docker-compose up -d --build
+            git reset --hard origin/master &&
+            git pull origin master &&
+            docker-compose -f docker-compose.prod.yml up -d --build 
           '
