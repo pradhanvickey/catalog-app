@@ -90,25 +90,3 @@ async def reset_password(user_in: schemas.UserUpdate, db: Session = Depends(get_
 @router.get("/", status_code=status.HTTP_200_OK)
 async def hello_world():
     return {"msg": "Hello World"}
-
-
-@router.post("/ex1")
-async def run_task():
-    conf = ConnectionConfig(
-        MAIL_USERNAME=settings.MAIL_USERNAME,
-        MAIL_PASSWORD=settings.MAIL_PASSWORD,
-        MAIL_FROM=settings.MAIL_FROM,
-        MAIL_PORT=settings.MAIL_PORT,
-        MAIL_SERVER=settings.MAIL_SERVER,
-        MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
-    )
-
-    message = MessageSchema(
-        subject="test",
-        recipients=["pradhanvickey@gmail.com"],
-        body="test",
-    )
-
-    fm = FastMail(conf)
-    await fm.send_message(message)
-    return "success"
