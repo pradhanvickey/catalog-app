@@ -61,8 +61,8 @@ jobs:
           echo BASE_URL="$BASE_URL" >> .env"
           ls -a
           echo "hello"
-          echo $BASE_URL
-          echo $DB_USER
+          echo "$BASE_URL"
+          echo "$DB_USER"
           cat .env
         shell: bash
       - name: Start containers
