@@ -82,7 +82,6 @@ jobs:
           echo "$PRIVATE_KEY" > private_key && chmod 400 private_key
           cat private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-          
             #Now we have got the access of EC2 and we will start the deploy .
             cd /home/ubuntu/catalog-app/ &&
             git checkout main &&
