@@ -63,8 +63,8 @@ jobs:
           echo "hello"
           echo "$BASE_URL"
         shell: bash
-      - name: Start containers
-        run: docker-compose up -d
+      - name: Building containers
+        run: docker-compose build
 
   Deployment:
     needs: Integration
@@ -88,5 +88,5 @@ jobs:
             git checkout main &&
             git fetch --all &&
             git pull origin main &&
-            docker-compose  build  && docker-compose up -d
+            docker-compose up -d --build
           '
