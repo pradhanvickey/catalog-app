@@ -9,7 +9,7 @@ from pydantic import EmailStr
 
 from app.config import settings
 from app.db.database import SessionLocal
-from app.schemas.user import UserInDBBase
+from app.api.v1.schemas.user import UserInDBBase
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM

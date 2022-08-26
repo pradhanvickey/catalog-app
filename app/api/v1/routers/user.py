@@ -1,13 +1,13 @@
-import logging
 from typing import Any
-from app.config import settings
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
-from app import schemas, crud
+
+from app import crud
+from app.api.v1 import schemas
 from app.celery_worker import send_email
 from app.dependencies import (get_db, generate_access_token, verify_password, get_current_user, http_exception,
                               get_user_exception)
@@ -85,8 +85,3 @@ async def reset_password(user_in: schemas.UserUpdate, db: Session = Depends(get_
 
     crud.user.update(db=db, db_obj=user, obj_in=user_in)
     return {"status": "Password reset completely"}
-
-
-@router.get("/", status_code=status.HTTP_200_OK)
-async def hello_world():
-    return {"msg": "Hello World"}
