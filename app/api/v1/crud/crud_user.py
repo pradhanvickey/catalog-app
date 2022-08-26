@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.api.v1 import schemas
-from app.crud.base import CRUDBase
+from app.api.v1.crud.base import CRUDBase
 from app.dependencies import get_password_hash
 from app.models.user import User
 

@@ -4,8 +4,7 @@ from fastapi import APIRouter, status, Depends
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app import crud
-from app.api.v1 import schemas
+from app.api.v1 import schemas, crud
 from app.dependencies import (get_db, get_current_user, get_user_exception, http_exception)
 from app.models import Store, Menu
 

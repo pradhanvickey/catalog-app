@@ -5,8 +5,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app import crud
-from app.api.v1 import schemas
+from app.api.v1 import schemas, crud
 from app.dependencies import (get_db, get_current_user, get_user_exception, http_exception)
 from app.models.menu import Menu
 from app.models.store import Store

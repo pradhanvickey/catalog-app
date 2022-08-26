@@ -6,8 +6,7 @@ from pydantic import EmailStr
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app import crud
-from app.api.v1 import schemas
+from app.api.v1 import schemas, crud
 from app.celery_worker import send_email
 from app.dependencies import (get_db, generate_access_token, verify_password, get_current_user, http_exception,
                               get_user_exception)
