@@ -37,6 +37,7 @@ jobs:
           MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
           MAIL_FROM_NAME: ${{ secrets.MAIL_FROM_NAME }}
           BASE_URL: ${{ secrets.BASE_URL }}
+          DB_USER: ${{ secrets.DB_USER }}
         run: |
           touch .env
           echo DATABASE_URL="$DATABASE_URL" >> .env"
