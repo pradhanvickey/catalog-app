@@ -37,7 +37,6 @@ jobs:
           MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
           MAIL_FROM_NAME: ${{ secrets.MAIL_FROM_NAME }}
           BASE_URL: ${{ secrets.BASE_URL }}
-          DB_USER: ${{ secrets.DB_USER }}
         run: |
           touch .env
           echo DATABASE_URL="$DATABASE_URL" >> .env"
@@ -60,11 +59,8 @@ jobs:
           echo MAIL_SERVER="$MAIL_SERVER" >> .env"
           echo MAIL_FROM_NAME="$MAIL_FROM_NAME" >> .env"
           echo BASE_URL="$BASE_URL" >> .env"
-          ls -a
           echo "hello"
           echo "$BASE_URL"
-          echo "$DB_USER"
-          cat .env
         shell: bash
       - name: Start containers
         run: docker-compose up -d
