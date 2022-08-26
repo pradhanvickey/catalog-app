@@ -1,4 +1,4 @@
-# .github/workflows/main.yml
+# .github/workflows/prod-deploy.yml
 name: CI/CD Catalog-App
 
 on:
@@ -60,6 +60,7 @@ jobs:
           echo MAIL_FROM_NAME="$MAIL_FROM_NAME" >> .env"
           echo BASE_URL="$BASE_URL" >> .env"
           ls -a
+          echo "hello"
           cat .env
         shell: bash
       - name: Start containers
