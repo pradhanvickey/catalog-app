@@ -18,4 +18,3 @@ fastapi-mail
 asyncio
 pyqrcode
 pypng
-fastapi-utils
