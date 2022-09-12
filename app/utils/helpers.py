@@ -2,11 +2,12 @@ import base64
 import os
 import uuid
 from typing import Union
-import pyqrcode  # noqa
+
 import png  # noqa
-from pyqrcode import QRCode  # noqa
+import pyqrcode  # noqa
 from fastapi import HTTPException
 from pydantic import HttpUrl
+from pyqrcode import QRCode  # noqa
 
 from app.config import settings
 from app.constants import TEMP_FILE_FOLDER
@@ -30,11 +31,11 @@ def upload_photo_to_s3(encoded_photo: Union[str, bytes], ext: str) -> HttpUrl:
     return url
 
 
-def create_qr_code_url(store_name):
-    s = f"{settings.BASE_URL}/store/{store_name}"
+def create_qr_code_url(unique_store_key):
+    s = f"{settings.BASE_URL}/store/{unique_store_key}"
     url = pyqrcode.create(s)
-    path = os.path.join(TEMP_FILE_FOLDER, store_name)
+    path = os.path.join(TEMP_FILE_FOLDER, unique_store_key)
     url.png(path, scale=6)
-    url = s3.upload_photo(path, store_name, ".png")
+    url = s3.upload_photo(path, unique_store_key, ".png")
     os.remove(path)
     return url

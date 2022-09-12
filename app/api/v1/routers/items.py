@@ -13,7 +13,8 @@ router = APIRouter(
 )
 
 
-@router.post("/store/{store_id}/menu/{menu_id}/item/", status_code=status.HTTP_201_CREATED, response_model=schemas.Item)
+@router.post("/stores/{store_id}/menus/{menu_id}/items/", status_code=status.HTTP_201_CREATED,
+             response_model=schemas.Item)
 async def create_item(store_id: int,
                       menu_id: int,
                       item_in: schemas.ItemCreate,
@@ -40,7 +41,7 @@ async def create_item(store_id: int,
     return menu
 
 
-@router.delete("/store/{store_id}/menu/{menu_id}/item/{item_id}/", status_code=status.HTTP_201_CREATED,
+@router.delete("/stores/{store_id}/menus/{menu_id}/items/{item_id}/", status_code=status.HTTP_200_OK,
                response_model=schemas.Item)
 async def delete_item(store_id: int,
                       menu_id: int,
@@ -63,11 +64,11 @@ async def delete_item(store_id: int,
     if item is None:
         raise http_exception(status_code=404, detail="Item not found")
 
-    item = crud.item.remove(db=db, id=id)
-    return {"status": f"Item: {item.title} deleted."}
+    item = crud.item.remove(db=db, id=item_id)
+    return item
 
 
-@router.get("/menu/{menu_id}/item/{item_id}/", status_code=status.HTTP_201_CREATED,
+@router.get("/menus/{menu_id}/items/{item_id}/", status_code=status.HTTP_200_OK,
             response_model=schemas.Item)
 async def get_item_details(menu_id: int,
                            item_id: int,
@@ -77,14 +78,26 @@ async def get_item_details(menu_id: int,
     """
     # checking if user has store and menu with provided store_id and menu_id.
     item = db.query(Item).filter(Item.menu_id == menu_id).filter(Item.id == item_id).first()
-
-    if item is None:
-        raise http_exception(status_code=404, detail="item not found")
-
     return item
 
 
-@router.put("/store/{store_id}/menu/{menu_id}/item/{item_id}/", status_code=status.HTTP_200_OK,
+@router.get("/stores/{store_name}/menus/", status_code=status.HTTP_200_OK, response_model=List[schemas.Item])
+async def get_item_details(store_name: str,
+                           skip: int = 0,
+                           limit: int = 10,
+                           db: Session = Depends(get_db)):
+    """
+    Get menu of a store using store_name
+    """
+    store = db.query(Store).filter(Store.name == store_name).first()
+    if not store:
+        raise http_exception(status_code=404, detail=f"Store {store_name} not found")
+
+    items = db.query(Item).join(Menu).filter(Menu.store_id == store.id).offset(skip).limit(limit).all()
+    return items
+
+
+@router.put("/stores/{store_id}/menus/{menu_id}/items/{item_id}/", status_code=status.HTTP_200_OK,
             response_model=schemas.Item)
 async def update_item(store_id: int,
                       menu_id: int,
@@ -113,7 +126,7 @@ async def update_item(store_id: int,
     return item
 
 
-@router.get("/store/{store_id}/menu/{menu_id}/item/", status_code=status.HTTP_201_CREATED,
+@router.get("/stores/{store_id}/menus/{menu_id}/items/", status_code=status.HTTP_200_OK,
             response_model=List[schemas.Item])
 async def get_all_item_of_menu(store_id: int,
                                menu_id: int,
@@ -123,9 +136,6 @@ async def get_all_item_of_menu(store_id: int,
     """
     Get all item of a store
     """
-    # checking if user has store and menu with provided store_id and menu_id.
-    menu = db.query(Item).join(Menu).filter(Menu.store_id == store_id).filter(Item.menu_id == menu_id).all()
-
-    if menu is None:
-        raise http_exception(status_code=404, detail="Menu not found")
-    return menu
+    items = db.query(Item).join(Menu).filter(Menu.store_id == store_id).filter(Item.menu_id == menu_id).offset(
+        skip).limit(limit).all()
+    return items

@@ -8,8 +8,9 @@ from sqlalchemy.orm import Session
 
 from app.api.v1 import schemas, crud
 from app.celery_worker import send_email
-from app.dependencies import (get_db, generate_access_token, verify_password, get_current_user, http_exception,
-                              get_user_exception)
+from app.dependencies import (get_db, generate_access_token,
+                              verify_password, get_current_user,
+                              http_exception, get_user_exception)
 from app.models.user import User
 
 router = APIRouter(
@@ -29,7 +30,7 @@ def authenticate_user(email: EmailStr, password: str, db):
     return user_record
 
 
-@router.get("/user/profile/", status_code=status.HTTP_200_OK, response_model=schemas.User)
+@router.get("/user/profile/", status_code=status.HTTP_200_OK, response_model=schemas.UserInDB)
 async def get_user_details(current_user: dict = Depends(get_current_user),
                            db: Session = Depends(get_db)) -> Any:
     """
@@ -46,21 +47,25 @@ async def get_user_details(current_user: dict = Depends(get_current_user),
 async def register(user_in: schemas.UserCreate,
                    db: Session = Depends(get_db)):
     """
-    Register the user.
+    New user registration.
     """
     try:
-        store = crud.user.create(db=db, obj_in=user_in)
-        send_email.delay("Registered Successfully", store.email, "Email registration done.")
+        user = crud.user.create(db=db, obj_in=user_in)
+        send_email.delay(f"User {user.email} Registered Successfully", user.email, "Email registration Successfully.")
+        token = generate_access_token(user)
     except IntegrityError:
         raise http_exception(status_code=400, detail="User with this email already exists")
-    return store
+
+    user.access_token = token
+    user.token_type = 'Bearer'
+    return user
 
 
-@router.post("/user/login/", status_code=status.HTTP_200_OK)
+@router.post("/user/login/", status_code=status.HTTP_200_OK, response_model=schemas.User)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(),
                 db: Session = Depends(get_db)):
     """
-    USer login
+    User login
     """
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
@@ -69,11 +74,14 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(),
                             headers={"WWW-Authenticate": "Bearer"})
 
     token = generate_access_token(user)
-    return {"access_token": token, "token_type": 'Bearer'}
+    user.access_token = token
+    user.token_type = 'Bearer'
+    return user
 
 
-@router.patch("/user/password/reset/", status_code=status.HTTP_200_OK)
-async def reset_password(user_in: schemas.UserUpdate, db: Session = Depends(get_db)):
+@router.patch("/user/password/reset/", status_code=status.HTTP_200_OK, response_model=schemas.User)
+async def reset_password(user_in: schemas.UserUpdate,
+                         db: Session = Depends(get_db)):
     """
     Reset Password
     """
@@ -82,5 +90,8 @@ async def reset_password(user_in: schemas.UserUpdate, db: Session = Depends(get_
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="User with given email not found")
 
-    crud.user.update(db=db, db_obj=user, obj_in=user_in)
-    return {"status": "Password reset completely"}
+    user = crud.user.update(db=db, db_obj=user, obj_in=user_in)
+    token = generate_access_token(user)
+    user.access_token = token
+    user.token_type = 'Bearer'
+    return user

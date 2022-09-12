@@ -1,4 +1,5 @@
 from typing import List
+from uuid import uuid4
 
 from sqlalchemy.orm import Session
 
@@ -11,14 +12,17 @@ from app.utils.helpers import upload_photo_to_s3, create_qr_code_url
 class CRUDStore(CRUDBase[Store, schemas.StoreCreate, schemas.StoreUpdate]):
     def create_with_owner(self, db: Session, *, obj_in: schemas.StoreCreate, owner_id: int) -> Store:
         logo_url = upload_photo_to_s3(obj_in.encoded_photo, obj_in.extension)
-        qr_code_url = create_qr_code_url(obj_in.name)
+        unique_store_key = str(uuid4())
+        qr_code_url = create_qr_code_url(unique_store_key)
+
         db_obj = Store(name=obj_in.name,
                        contact_no=obj_in.contact_no,
                        address=obj_in.address,
                        is_active=obj_in.is_active,
                        owner_id=owner_id,
                        logo_url=logo_url,
-                       qr_code_url=qr_code_url)
+                       qr_code_url=qr_code_url,
+                       unique_store_key=unique_store_key)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -42,7 +46,7 @@ class CRUDStore(CRUDBase[Store, schemas.StoreCreate, schemas.StoreUpdate]):
             update_data = obj_in
         else:
             update_data = obj_in.dict(exclude_unset=True)
-        if update_data["encoded_photo"] and update_data["extension"]:
+        if "encoded_photo" in update_data and update_data["encoded_photo"] and update_data["extension"]:
             url = upload_photo_to_s3(update_data["encoded_photo"], update_data["extension"])
             del update_data["logo_url"]
             update_data["logo_url"] = url

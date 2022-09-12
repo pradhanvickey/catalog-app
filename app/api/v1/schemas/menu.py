@@ -11,7 +11,7 @@ class MenuBase(BaseModel):
 class MenuCreate(MenuBase):
     is_active: Optional[bool] = True
     encoded_photo: Union[str, bytes]
-    extension: str
+    extension: str = "png"
 
 
 class MenuUpdate(BaseModel):

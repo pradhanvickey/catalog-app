@@ -5,11 +5,12 @@ from sqlalchemy.orm import Session
 from app.api.v1 import schemas
 from app.api.v1.crud.base import CRUDBase
 from app.models.item import Item
+from app.utils.helpers import upload_photo_to_s3
 
 
 class CRUDItem(CRUDBase[Item, schemas.ItemCreate, schemas.ItemUpdate]):
     def create_with_menu_owner(self, db: Session, *, obj_in: schemas.ItemCreate, menu_id: int, owner_id: int) -> Item:
-        url = self.upload_photo_to_s3(obj_in.encoded_photo, obj_in.extension)
+        url = upload_photo_to_s3(obj_in.encoded_photo, obj_in.extension)
         db_obj = Item(title=obj_in.title,
                       description=obj_in.description,
                       price=obj_in.price,
@@ -41,8 +42,8 @@ class CRUDItem(CRUDBase[Item, schemas.ItemCreate, schemas.ItemUpdate]):
             update_data = obj_in
         else:
             update_data = obj_in.dict(exclude_unset=True)
-        if update_data["encoded_photo"] and update_data["extension"]:
-            url = self.upload_photo_to_s3(update_data["encoded_photo"], update_data["extension"])
+        if "encoded_photo" in update_data and  update_data["encoded_photo"] and update_data["extension"]:
+            url = upload_photo_to_s3(update_data["encoded_photo"], update_data["extension"])
             del update_data["image_url"]
             update_data["image_url"] = url
         return super().update(db, db_obj=db_obj, obj_in=update_data)

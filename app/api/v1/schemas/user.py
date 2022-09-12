@@ -23,7 +23,6 @@ class UserUpdate(UserBase):
 class UserInDBBase(UserBase):
     id: Optional[int] = None
     is_active: bool = True
-    hashed_password: str
 
     class Config:
         orm_mode = True
@@ -31,7 +30,8 @@ class UserInDBBase(UserBase):
 
 # Properties to return to client
 class User(UserInDBBase):
-    pass
+    access_token: Optional[str]
+    token_type: Optional[str]
 
 
 # Properties to stored in DB

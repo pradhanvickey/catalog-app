@@ -13,7 +13,7 @@ class ItemBase(BaseModel):
 
 class ItemCreate(ItemBase):
     encoded_photo: Union[str, bytes]
-    extension: str
+    extension: str = "png"
 
 
 class ItemUpdate(BaseModel):

@@ -1,4 +1,5 @@
 from typing import Optional, List, Union
+from uuid import UUID
 
 from pydantic import BaseModel, HttpUrl
 
@@ -13,7 +14,7 @@ class StoreBase(BaseModel):
 class StoreCreate(StoreBase):
     is_active: Optional[bool] = True
     encoded_photo: Union[str, bytes]
-    extension: str
+    extension: str = "png"
 
 
 class StoreUpdate(BaseModel):
@@ -31,6 +32,7 @@ class StoreInDBBase(StoreBase):
     owner_id: int
     logo_url: HttpUrl
     qr_code_url: HttpUrl
+    unique_store_key: UUID
 
     class Config:
         orm_mode = True
