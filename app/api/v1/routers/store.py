@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 
-@router.post("/stores/", status_code=status.HTTP_201_CREATED, response_model=schemas.Store)
+@router.post("/stores", status_code=status.HTTP_201_CREATED, response_model=schemas.Store)
 async def create_store(store_in: schemas.StoreCreate,
                        current_user: dict = Depends(get_current_user),
                        db: Session = Depends(get_db)):
@@ -32,7 +32,7 @@ async def create_store(store_in: schemas.StoreCreate,
     return store
 
 
-@router.get("/stores/", status_code=status.HTTP_200_OK, response_model=List[schemas.Store])
+@router.get("/stores", status_code=status.HTTP_200_OK, response_model=List[schemas.Store])
 async def get_all_store(skip: int = 0,
                         limit: int = 100,
                         current_user: dict = Depends(get_current_user),
@@ -48,12 +48,12 @@ async def get_all_store(skip: int = 0,
     return store
 
 
-@router.get("/stores/{store_id}/", response_model=schemas.Store)
+@router.get("/stores/{store_id}", response_model=schemas.Store)
 async def get_store(store_id: int,
                     current_user: dict = Depends(get_current_user),
                     db: Session = Depends(get_db)):
     """
-    Get store of a user using store id.
+    Get store  details of a store using store id.
     """
     if current_user is None:
         raise get_user_exception()
@@ -65,11 +65,11 @@ async def get_store(store_id: int,
     return store
 
 
-@router.get("/stores/{unique_store_key}", response_model=schemas.Store)
+@router.get("/stores/", response_model=schemas.Store)
 async def get_store_using_unique_key(unique_store_key: str,
                                      db: Session = Depends(get_db)):
     """
-    Get store of a user using store id.
+    Get store details using store id.
     """
     store = db.query(Store).filter(Store.unique_store_key == unique_store_key).first()
     if store is None:
@@ -83,7 +83,7 @@ async def get_all_menu_of_store(unique_store_key: str,
                                 limit: int = 100,
                                 db: Session = Depends(get_db)):
     """
-    Get all menu's of a store
+    Get all menu's of a store using unique_store_key
     """
     store = db.query(Store).filter(Store.unique_store_key == unique_store_key).first()
     if store is None:
@@ -92,13 +92,13 @@ async def get_all_menu_of_store(unique_store_key: str,
     return menus
 
 
-@router.patch("/stores/{store_id}/", status_code=status.HTTP_200_OK, response_model=schemas.Store)
+@router.patch("/stores/{store_id}", status_code=status.HTTP_200_OK, response_model=schemas.Store)
 async def update_store(store_id: int,
                        store_in: schemas.StoreUpdate,
                        current_user: dict = Depends(get_current_user),
                        db: Session = Depends(get_db)):
     """
-    Update a store
+    Update a store using store id
     """
     if current_user is None:
         raise get_user_exception()
@@ -113,7 +113,7 @@ async def update_store(store_id: int,
     return store
 
 
-@router.delete("/stores/{store_id}/", status_code=status.HTTP_200_OK, response_model=schemas.Store)
+@router.delete("/stores/{store_id}", status_code=status.HTTP_200_OK, response_model=schemas.Store)
 async def delete_store(store_id: int,
                        current_user: dict = Depends(get_current_user),
                        db: Session = Depends(get_db)):
@@ -131,16 +131,4 @@ async def delete_store(store_id: int,
         raise http_exception(f"Store {store.name} doesn't exists.")
 
     store = crud.store.remove(db=db, id=store.id)
-    return store
-
-
-@router.get("/store/qrcode/{store_id}/", status_code=status.HTTP_200_OK, response_model=schemas.Store)
-async def get_store_qrcode(store_id: int,
-                           db: Session = Depends(get_db)):
-    """
-    Get QR code of the store.
-    """
-    store = db.query(Store).filter(Store.id == store_id).first()
-    if store is None:
-        raise http_exception(status_code=404, detail="Store doesn't exists.")
     return store

@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.post("/stores/{store_id}/menus/{menu_id}/items/", status_code=status.HTTP_201_CREATED,
+@router.post("/stores/{store_id}/menus/{menu_id}/items", status_code=status.HTTP_201_CREATED,
              response_model=schemas.Item)
 async def create_item(store_id: int,
                       menu_id: int,
@@ -41,7 +41,7 @@ async def create_item(store_id: int,
     return menu
 
 
-@router.delete("/stores/{store_id}/menus/{menu_id}/items/{item_id}/", status_code=status.HTTP_200_OK,
+@router.delete("/stores/{store_id}/menus/{menu_id}/items/{item_id}", status_code=status.HTTP_200_OK,
                response_model=schemas.Item)
 async def delete_item(store_id: int,
                       menu_id: int,
@@ -68,20 +68,20 @@ async def delete_item(store_id: int,
     return item
 
 
-@router.get("/menus/{menu_id}/items/{item_id}/", status_code=status.HTTP_200_OK,
+@router.get("/menus/{menu_id}/items/{item_id}", status_code=status.HTTP_200_OK,
             response_model=schemas.Item)
 async def get_item_details(menu_id: int,
                            item_id: int,
                            db: Session = Depends(get_db)):
     """
-    Get all item of a store
+    Get a item of a store
     """
     # checking if user has store and menu with provided store_id and menu_id.
     item = db.query(Item).filter(Item.menu_id == menu_id).filter(Item.id == item_id).first()
     return item
 
 
-@router.get("/stores/{unique_store_key}/items/", status_code=status.HTTP_200_OK, response_model=List[schemas.Item])
+@router.get("/stores/{unique_store_key}/items", status_code=status.HTTP_200_OK, response_model=List[schemas.Item])
 async def get_item_details(unique_store_key: str,
                            skip: int = 0,
                            limit: int = 10,
@@ -97,7 +97,7 @@ async def get_item_details(unique_store_key: str,
     return items
 
 
-@router.put("/stores/{store_id}/menus/{menu_id}/items/{item_id}/", status_code=status.HTTP_200_OK,
+@router.put("/stores/{store_id}/menus/{menu_id}/items/{item_id}", status_code=status.HTTP_200_OK,
             response_model=schemas.Item)
 async def update_item(store_id: int,
                       menu_id: int,
@@ -106,7 +106,7 @@ async def update_item(store_id: int,
                       current_user: dict = Depends(get_current_user),
                       db: Session = Depends(get_db)):
     """
-    Update Item
+    Update a Item
     """
     if current_user is None:
         raise get_user_exception()
@@ -126,7 +126,7 @@ async def update_item(store_id: int,
     return item
 
 
-@router.get("/stores/{store_id}/menus/{menu_id}/items/", status_code=status.HTTP_200_OK,
+@router.get("/stores/{store_id}/menus/{menu_id}/items", status_code=status.HTTP_200_OK,
             response_model=List[schemas.Item])
 async def get_all_item_of_menu(store_id: int,
                                menu_id: int,
@@ -135,7 +135,7 @@ async def get_all_item_of_menu(store_id: int,
                                current_user: dict = Depends(get_current_user),
                                db: Session = Depends(get_db)):
     """
-    Get all item of a store using unique_store_key
+    Get all item of a store using store_id
     """
     if current_user is None:
         raise get_user_exception()

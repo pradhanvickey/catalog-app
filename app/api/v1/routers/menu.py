@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.post("/stores/{store_id}/menus/", status_code=status.HTTP_201_CREATED, response_model=schemas.Menu)
+@router.post("/stores/{store_id}/menus", status_code=status.HTTP_201_CREATED, response_model=schemas.Menu)
 async def create_menu(store_id: int,
                       menu_in: schemas.MenuCreate,
                       current_user: dict = Depends(get_current_user),
@@ -37,13 +37,13 @@ async def create_menu(store_id: int,
     return menu
 
 
-@router.delete("/stores/{store_id}/menus/{menu_id}/", status_code=status.HTTP_200_OK, response_model=schemas.Menu)
+@router.delete("/stores/{store_id}/menus/{menu_id}", status_code=status.HTTP_200_OK, response_model=schemas.Menu)
 async def delete_menu(store_id: int,
                       menu_id: int,
                       current_user: dict = Depends(get_current_user),
                       db: Session = Depends(get_db)):
     """
-    Delete a Menu
+    Delete a Menu using menu id
     """
     if current_user is None:
         raise get_user_exception()
@@ -61,14 +61,14 @@ async def delete_menu(store_id: int,
     return menu
 
 
-@router.get("/stores/{store_id}/menus/", status_code=status.HTTP_200_OK, response_model=List[schemas.Menu])
+@router.get("/stores/{store_id}/all-menus", status_code=status.HTTP_200_OK, response_model=List[schemas.Menu])
 async def get_all_menu(store_id: int,
                        skip: int = 0,
                        limit: int = 100,
                        current_user: dict = Depends(get_current_user),
                        db: Session = Depends(get_db)):
     """
-    Get all Menu of the store
+    Get all Menu of a store
     """
     if current_user is None:
         raise get_user_exception()
@@ -83,13 +83,13 @@ async def get_all_menu(store_id: int,
     return menu
 
 
-@router.get("/stores/{store_id}/menus/{menu_id}/", status_code=status.HTTP_200_OK, response_model=schemas.Menu)
+@router.get("/stores/{store_id}/menus/{menu_id}", status_code=status.HTTP_200_OK, response_model=schemas.Menu)
 async def get_menu(store_id: int,
                    menu_id: int,
                    current_user: dict = Depends(get_current_user),
                    db: Session = Depends(get_db)):
     """
-    Get Menu of the store
+    Get Menu of the store using menu_id
     """
     if current_user is None:
         raise get_user_exception()
@@ -105,14 +105,14 @@ async def get_menu(store_id: int,
     return menu
 
 
-@router.put("/stores/{store_id}/menus/{menu_id}/", status_code=status.HTTP_200_OK, response_model=schemas.Menu)
+@router.put("/stores/{store_id}/menus/{menu_id}", status_code=status.HTTP_200_OK, response_model=schemas.Menu)
 async def update_menu(store_id: int,
                       menu_id: int,
                       menu_in: schemas.MenuUpdate,
                       current_user: dict = Depends(get_current_user),
                       db: Session = Depends(get_db)):
     """
-    Update a Menu
+    Update a Menu using menu id
     """
     if current_user is None:
         raise get_user_exception()

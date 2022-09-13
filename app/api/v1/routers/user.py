@@ -30,7 +30,7 @@ def authenticate_user(email: EmailStr, password: str, db):
     return user_record
 
 
-@router.get("/user/profile/", status_code=status.HTTP_200_OK, response_model=schemas.UserInDB)
+@router.get("/user", status_code=status.HTTP_200_OK, response_model=schemas.UserInDB)
 async def get_user_details(current_user: dict = Depends(get_current_user),
                            db: Session = Depends(get_db)) -> Any:
     """
@@ -43,7 +43,7 @@ async def get_user_details(current_user: dict = Depends(get_current_user),
     return user_data
 
 
-@router.post("/user/register/", status_code=status.HTTP_201_CREATED, response_model=schemas.User)
+@router.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.User)
 async def register(user_in: schemas.UserCreate,
                    db: Session = Depends(get_db)):
     """
@@ -61,7 +61,7 @@ async def register(user_in: schemas.UserCreate,
     return user
 
 
-@router.post("/user/login/", status_code=status.HTTP_200_OK, response_model=schemas.User)
+@router.post("/users/login", status_code=status.HTTP_200_OK, response_model=schemas.User)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(),
                 db: Session = Depends(get_db)):
     """
@@ -79,7 +79,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(),
     return user
 
 
-@router.patch("/user/password/", status_code=status.HTTP_200_OK, response_model=schemas.User)
+@router.patch("/users", status_code=status.HTTP_200_OK, response_model=schemas.User)
 async def reset_password(user_in: schemas.UserUpdate,
                          db: Session = Depends(get_db)):
     """
