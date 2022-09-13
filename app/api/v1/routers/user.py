@@ -14,7 +14,7 @@ from app.dependencies import (get_db, generate_access_token,
 from app.models.user import User
 
 router = APIRouter(
-    tags=["User"]
+    tags=["Users"]
 )
 
 

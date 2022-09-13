@@ -11,7 +11,7 @@ from app.models.menu import Menu
 from app.models.store import Store
 
 router = APIRouter(
-    tags=["Store"]
+    tags=["Stores"]
 )
 
 

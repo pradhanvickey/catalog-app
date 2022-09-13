@@ -9,7 +9,7 @@ from app.dependencies import (get_db, get_current_user, get_user_exception, http
 from app.models import Store, Menu
 
 router = APIRouter(
-    tags=["Menu"]
+    tags=["Menus"]
 )
 
 
