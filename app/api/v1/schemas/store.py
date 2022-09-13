@@ -46,7 +46,6 @@ class Store(StoreInDBBase):
 # Properties to return to client with multiple data
 class StoreMultiple(BaseModel):
     store: List[Store]
-    status: str
 
 
 # Properties to stored in DB

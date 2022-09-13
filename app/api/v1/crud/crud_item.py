@@ -11,7 +11,7 @@ from app.utils.helpers import upload_photo_to_s3
 class CRUDItem(CRUDBase[Item, schemas.ItemCreate, schemas.ItemUpdate]):
     def create_with_menu_owner(self, db: Session, *, obj_in: schemas.ItemCreate, menu_id: int, owner_id: int) -> Item:
         url = upload_photo_to_s3(obj_in.encoded_photo, obj_in.extension)
-        db_obj = Item(title=obj_in.title,
+        db_obj = Item(title=obj_in.title.capitalize(),
                       description=obj_in.description,
                       price=obj_in.price,
                       is_active=obj_in.is_active,

@@ -81,17 +81,17 @@ async def get_item_details(menu_id: int,
     return item
 
 
-@router.get("/stores/{store_name}/menus/", status_code=status.HTTP_200_OK, response_model=List[schemas.Item])
-async def get_item_details(store_name: str,
+@router.get("/stores/{unique_store_key}/items/", status_code=status.HTTP_200_OK, response_model=List[schemas.Item])
+async def get_item_details(unique_store_key: str,
                            skip: int = 0,
                            limit: int = 10,
                            db: Session = Depends(get_db)):
     """
-    Get menu of a store using store_name
+    Get all items of the store using unique_store_key
     """
-    store = db.query(Store).filter(Store.name == store_name).first()
+    store = db.query(Store).filter(Store.unique_store_key == unique_store_key).first()
     if not store:
-        raise http_exception(status_code=404, detail=f"Store {store_name} not found")
+        raise http_exception(status_code=404, detail=f"Store not found")
 
     items = db.query(Item).join(Menu).filter(Menu.store_id == store.id).offset(skip).limit(limit).all()
     return items
@@ -132,10 +132,19 @@ async def get_all_item_of_menu(store_id: int,
                                menu_id: int,
                                skip: int = 0,
                                limit: int = 100,
+                               current_user: dict = Depends(get_current_user),
                                db: Session = Depends(get_db)):
     """
-    Get all item of a store
+    Get all item of a store using unique_store_key
     """
-    items = db.query(Item).join(Menu).filter(Menu.store_id == store_id).filter(Item.menu_id == menu_id).offset(
+    if current_user is None:
+        raise get_user_exception()
+
+    owner_id = current_user.get("id")
+    store = db.query(Store).filter(Store.id == store_id).filter(Store.owner_id == owner_id).first()
+    if store is None:
+        raise http_exception(status_code=404, detail="Store not found")
+
+    items = db.query(Item).join(Menu).filter(Menu.store_id == store.id).filter(Item.menu_id == menu_id).offset(
         skip).limit(limit).all()
     return items

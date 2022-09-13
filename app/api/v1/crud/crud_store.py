@@ -15,9 +15,9 @@ class CRUDStore(CRUDBase[Store, schemas.StoreCreate, schemas.StoreUpdate]):
         unique_store_key = str(uuid4())
         qr_code_url = create_qr_code_url(unique_store_key)
 
-        db_obj = Store(name=obj_in.name,
+        db_obj = Store(name=obj_in.name.capitalize(),
                        contact_no=obj_in.contact_no,
-                       address=obj_in.address,
+                       address=obj_in.address.capitalize(),
                        is_active=obj_in.is_active,
                        owner_id=owner_id,
                        logo_url=logo_url,
@@ -48,7 +48,8 @@ class CRUDStore(CRUDBase[Store, schemas.StoreCreate, schemas.StoreUpdate]):
             update_data = obj_in.dict(exclude_unset=True)
         if "encoded_photo" in update_data and update_data["encoded_photo"] and update_data["extension"]:
             url = upload_photo_to_s3(update_data["encoded_photo"], update_data["extension"])
-            del update_data["logo_url"]
+            if "logo_url" in update_data:
+                del update_data["logo_url"]
             update_data["logo_url"] = url
         return super().update(db, db_obj=db_obj, obj_in=update_data)
 

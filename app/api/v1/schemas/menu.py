@@ -38,7 +38,7 @@ class Menu(MenuInDBBase):
 
 # Properties to return to client with multiple data
 class MenuMultiple(BaseModel):
-    menu: List[Menu]
+    menus: List[Menu]
 
     class Config:
         orm_mode = True

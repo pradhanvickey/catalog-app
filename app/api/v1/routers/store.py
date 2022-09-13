@@ -1,5 +1,4 @@
 from typing import List
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.exc import IntegrityError
@@ -61,6 +60,18 @@ async def get_store(store_id: int,
 
     owner_id = current_user.get("id")
     store = db.query(Store).filter(Store.owner_id == owner_id).filter(Store.id == store_id).first()
+    if store is None:
+        raise http_exception(status_code=404, detail="Store doesn't exists.")
+    return store
+
+
+@router.get("/stores/{unique_store_key}", response_model=schemas.Store)
+async def get_store_using_unique_key(unique_store_key: str,
+                                     db: Session = Depends(get_db)):
+    """
+    Get store of a user using store id.
+    """
+    store = db.query(Store).filter(Store.unique_store_key == unique_store_key).first()
     if store is None:
         raise http_exception(status_code=404, detail="Store doesn't exists.")
     return store

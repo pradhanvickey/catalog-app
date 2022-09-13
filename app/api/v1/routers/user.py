@@ -79,7 +79,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(),
     return user
 
 
-@router.patch("/user/password/reset/", status_code=status.HTTP_200_OK, response_model=schemas.User)
+@router.patch("/user/password/", status_code=status.HTTP_200_OK, response_model=schemas.User)
 async def reset_password(user_in: schemas.UserUpdate,
                          db: Session = Depends(get_db)):
     """

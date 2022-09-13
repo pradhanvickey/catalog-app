@@ -11,7 +11,7 @@ from app.utils.helpers import upload_photo_to_s3
 class CRUDMenu(CRUDBase[Menu, schemas.MenuCreate, schemas.MenuUpdate]):
     def create_with_shop(self, db: Session, *, obj_in: schemas.StoreCreate, store_id: int) -> Menu:
         url = upload_photo_to_s3(obj_in.encoded_photo, obj_in.extension)
-        db_obj = Menu(title=obj_in.title,
+        db_obj = Menu(title=obj_in.title.capitalize(),
                       is_active=obj_in.is_active,
                       store_id=store_id,
                       image_url=url)
