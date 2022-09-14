@@ -21,7 +21,7 @@ def generate_access_token(user: UserInDBBase, expires_delta: Optional[timedelta]
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=120)
+        expire = datetime.utcnow() + timedelta(minutes=180)
     encode = {"email": user.email, "id": user.id, "exp": expire}
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
