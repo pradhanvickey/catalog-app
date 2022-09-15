@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, status, Depends
+from fastapi_pagination import Page, paginate
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -81,10 +82,8 @@ async def get_item_details(menu_id: int,
     return item
 
 
-@router.get("/stores/{unique_store_key}/items", status_code=status.HTTP_200_OK, response_model=List[schemas.Item])
+@router.get("/stores/{unique_store_key}/items", status_code=status.HTTP_200_OK, response_model=Page[schemas.Item])
 async def get_item_details(unique_store_key: str,
-                           skip: int = 0,
-                           limit: int = 10,
                            db: Session = Depends(get_db)):
     """
     Get all items of the store using unique_store_key
@@ -93,8 +92,8 @@ async def get_item_details(unique_store_key: str,
     if not store:
         raise http_exception(status_code=404, detail=f"Store not found")
 
-    items = db.query(Item).join(Menu).filter(Menu.store_id == store.id).offset(skip).limit(limit).all()
-    return items
+    items = db.query(Item).join(Menu).filter(Menu.store_id == store.id).all()
+    return paginate(items)
 
 
 @router.put("/stores/{store_id}/menus/{menu_id}/items/{item_id}", status_code=status.HTTP_200_OK,

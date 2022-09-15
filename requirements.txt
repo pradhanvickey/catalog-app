@@ -18,3 +18,4 @@ fastapi-mail
 asyncio
 pyqrcode
 pypng
+fastapi-pagination[all]
