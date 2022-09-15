@@ -131,16 +131,11 @@ async def get_all_item_of_menu(store_id: int,
                                menu_id: int,
                                skip: int = 0,
                                limit: int = 100,
-                               current_user: dict = Depends(get_current_user),
                                db: Session = Depends(get_db)):
     """
     Get all item of a store using store_id
     """
-    if current_user is None:
-        raise get_user_exception()
-
-    owner_id = current_user.get("id")
-    store = db.query(Store).filter(Store.id == store_id).filter(Store.owner_id == owner_id).first()
+    store = db.query(Store).filter(Store.id == store_id).first()
     if store is None:
         raise http_exception(status_code=404, detail="Store not found")
 
